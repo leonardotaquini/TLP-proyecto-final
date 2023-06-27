@@ -18,11 +18,12 @@ const sequelize = new Sequelize(
 
     const connectDB = async () => {
         try {
-            await sequelize.sync({ force: true });
+            await sequelize.sync({ force: false });
             console.log("Conexión exitosa");
         } catch (error) {
             console.log("Error: ", error);
         }
     }
+
 
     export { connectDB, sequelize, DataTypes };

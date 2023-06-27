@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { connectDB } from './config/db.js';
 import profesionalRoutes from './routes/profesional.routes.js';
+import oficio from './routes/oficio.routes.js';
 
 //Instancia de express
 const app = express();
@@ -21,6 +22,7 @@ connectDB();
 
 //Configuración de rutas
 app.use('/api/profesionales', profesionalRoutes);
+app.use('/api/oficios', oficio);
 
 //Levanto el servidor
 app.listen(PORT, () => {

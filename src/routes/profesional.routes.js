@@ -7,12 +7,12 @@ const router = express.Router();
 //Obtener todos los profesionales
 router.get("/", listarProfesionales);
 //Obtener un profesional por id
-router.get("/", obtenerProfesional);
+router.get("/:id", obtenerProfesional);
 //Crear un profesional
 router.post("/", crearProfesional);
 //Actualizar un profesional
-router.put("/", actualizarProfesional);
+router.put("/:id", actualizarProfesional);
 //Eliminar un profesional
-router.delete("/", eliminarProfesional);
+router.delete("/:id", eliminarProfesional);
 
 export default router;
