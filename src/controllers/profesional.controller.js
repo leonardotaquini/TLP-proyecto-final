@@ -6,9 +6,6 @@ const listarProfesionales = async (req, res) => {
         const profesionales = await Profesional.findAll({
             include: Oficio,
         });
-        
-           
-
         res.status(200).json(profesionales);
     } catch (error) {
         res.status(500).json({ message: error.message || "Error al obtener los profesionales" });
@@ -53,18 +50,32 @@ const crearProfesional = async (req, res) => {
 
 const actualizarProfesional = async (req, res) => {
     try {
-        const { id } = req.params;
-        const profesional = req.body;
-        const profesionalActualizado = await Profesional.update(profesional, {
-            where: {
-                id: id,
-            },
-        });
-        res.status(200).json(profesionalActualizado);
+      const { id } = req.params;
+      const profesional = req.body;
+  
+      const [numFilasActualizadas] = await Profesional.update(profesional, {
+        where: {
+          id: id,
+        },
+      });
+  
+      if (numFilasActualizadas === 0) {
+        // No se encontró el profesional con el ID especificado
+        return res.status(404).json({ message: "Profesional no encontrado" });
+      }
+  
+      const profesionalActualizado = await Profesional.findByPk(id);
+      if (!profesionalActualizado) {
+        // No se encontró el profesional actualizado
+        return res.status(404).json({ message: "No se pudo obtener el profesional actualizado" });
+      }
+        
+      res.status(200).json(profesionalActualizado);
     } catch (error) {
-        res.status(500).json({ message: error.message || "Error al actualizar el profesional" });
+      res.status(500).json({ message: error.message || "Error al actualizar el profesional" });
     }
-}
+  };
+  
 
 const eliminarProfesional = async (req, res) => {
     try {
@@ -80,4 +91,18 @@ const eliminarProfesional = async (req, res) => {
     }
 }
 
-export { listarProfesionales, obtenerProfesional, crearProfesional, actualizarProfesional, eliminarProfesional };
+const restaurarProfesional = async () =>{
+    try {
+        await Profesional.restore({
+            where: {
+                id: req.params.id,
+            },
+        });
+        res.json({ message: 'Profesional restaurado' });
+    } catch (error) {
+        res.status(500).json({error: error.message || 'Error en el servidor'});
+        console.log(error);
+    }
+} 
+
+export { listarProfesionales, obtenerProfesional, crearProfesional, actualizarProfesional, eliminarProfesional, restaurarProfesional };

@@ -1,5 +1,5 @@
 import express from "express";
-import { listarProfesionales, obtenerProfesional, crearProfesional, actualizarProfesional, eliminarProfesional  } from "../controllers/profesional.controller.js";
+import { listarProfesionales, obtenerProfesional, crearProfesional, actualizarProfesional, eliminarProfesional, restaurarProfesional  } from "../controllers/profesional.controller.js";
 const router = express.Router();
 
 
@@ -10,6 +10,8 @@ router.get("/", listarProfesionales);
 router.get("/:id", obtenerProfesional);
 //Crear un profesional
 router.post("/", crearProfesional);
+//Restarurar un profesional
+router.post("/restore/:id", restaurarProfesional);
 //Actualizar un profesional
 router.put("/:id", actualizarProfesional);
 //Eliminar un profesional

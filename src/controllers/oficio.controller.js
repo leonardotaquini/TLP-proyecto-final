@@ -55,10 +55,23 @@ const eliminarOficio = async (req, res) => {
     }
 }
 
+const restablecerOficio = async (req, res) => {
+    try {
+        await Oficio.restore({
+            where: { id: req.params.id }
+        });
+        res.json({ message: 'Oficio restablecido' });
+    } catch (error) {
+        res.status(500).json({error: error.message || 'Error en el servidor'});
+        console.log(error);
+    }
+}
+
 export {
     listarOficios,
     obtenerOficio,
     crearOficio,
     actualizarOficio,
-    eliminarOficio
+    eliminarOficio,
+    restablecerOficio
 }
