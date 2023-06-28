@@ -24,6 +24,10 @@ const obtenerProfesional = async (req, res) => {
             },
             include: Oficio,
         });
+        if(!profesional){
+            res.status(404).json({ message: "El profesional no existe" });
+            return;
+        }
         res.status(200).json(profesional);
     } catch (error) {
         res.status(500).json({ message: error.message || "Error al obtener el profesional" });
@@ -43,6 +47,7 @@ const crearProfesional = async (req, res) => {
         res.status(201).json(profesionalCreado);
     } catch (error) {
         res.status(500).json({ message: error.message || "Error al crear el profesional" });
+        console.log(error)
     }
 }
 
