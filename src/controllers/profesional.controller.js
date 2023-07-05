@@ -1,5 +1,11 @@
+import { comparePassword, hashPassword } from "../helpers/bcrypt.js";
 import Oficio from "../models/Oficio.model.js";
 import Profesional from "../models/Profesional.model.js";
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
+
+//Funciones de administrador
 
 const listarProfesionales = async (req, res) => {
     try {
@@ -9,6 +15,7 @@ const listarProfesionales = async (req, res) => {
         res.status(200).json(profesionales);
     } catch (error) {
         res.status(500).json({ message: error.message || "Error al obtener los profesionales" });
+        console.log(error);
     }
 };
 
@@ -34,6 +41,9 @@ const obtenerProfesional = async (req, res) => {
 const crearProfesional = async (req, res) => {
     try {
         const profesional = req.body;
+        const { password } = profesional;
+        const passwordHashed = await hashPassword(password);
+        profesional.password = passwordHashed;       
         const profesionalCreado = await Profesional.create(profesional);
         const oficioProfesional = await Oficio.findAll({
             where: {
@@ -91,7 +101,7 @@ const eliminarProfesional = async (req, res) => {
     }
 }
 
-const restaurarProfesional = async () =>{
+const restaurarProfesional = async (req, res) =>{
     try {
         await Profesional.restore({
             where: {
@@ -105,4 +115,32 @@ const restaurarProfesional = async () =>{
     }
 } 
 
-export { listarProfesionales, obtenerProfesional, crearProfesional, actualizarProfesional, eliminarProfesional, restaurarProfesional };
+const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const profesional = await Profesional.findOne({
+            where: {
+                email: email,
+            },
+        });
+        if (!profesional) {
+            return res.status(404).json({ message: "El profesional no existe" });
+        }
+        
+        const passwordValido = await comparePassword(password, profesional.dataValues.password);
+        if (!passwordValido) {
+            return res.status(401).json({ message: "Contraseña incorrecta" });
+        }
+        const token = jwt.sign({ id: profesional.id }, process.env.JWT_SECRET, {
+            expiresIn: 86400, // 24 horas
+        });
+        res.status(200).json({ token: token });
+    } catch (error) {
+        res.status(500).json({ message: error.message || "Error al iniciar sesión" });
+    }
+}
+
+
+
+
+export { listarProfesionales, obtenerProfesional, crearProfesional, actualizarProfesional, eliminarProfesional, restaurarProfesional, login };
