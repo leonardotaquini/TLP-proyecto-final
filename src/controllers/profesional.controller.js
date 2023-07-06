@@ -131,7 +131,16 @@ const login = async (req, res) => {
         if (!passwordValido) {
             return res.status(401).json({ message: "Contraseña incorrecta" });
         }
-        const token = jwt.sign({ id: profesional.id }, process.env.JWT_SECRET, {
+        const payload = {
+            id: profesional.id,
+            email: profesional.email,
+            nombre: profesional.nombre,
+            apellido: profesional.apellido,
+            telefono: profesional.telefono,
+            direccion: profesional.direccion,
+            oficioId: profesional.oficioId,
+        }
+        const token = jwt.sign( payload, process.env.JWT_SECRET, {
             expiresIn: 86400, // 24 horas
         });
         res.status(200).json({ token: token });
